@@ -1,6 +1,5 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <GL/glut.h>
 
 #include <iostream>
 #include <string>
@@ -14,9 +13,9 @@
 #include "transform.h"
 #include "mesh.h"
 
-#include "deps/imgui/imgui.h"
-#include "deps/imgui/imgui_impl_glfw.h"
-#include "deps/imgui/imgui_impl_opengl3.h"
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
         
 #define MAINPROGRAM 
 #include "globals.h" 
@@ -212,10 +211,15 @@ void display(float& ambient_slider, float& diffuse_slider, float& specular_slide
 int main(int argc, char* argv[]){
     // Initialise GLFW and GLEW; and parse path from command line  
     GLFWwindow* window;
-    mesh.object_path = argv[1]; 
+    mesh.object_path = "data/bunny.obj";
 
     if (!glfwInit()) return -1;
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); 
+    const char* glsl_version = "#version 150";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
+
     window = glfwCreateWindow(1920, 1080, "Scene Viewer", NULL, NULL);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
@@ -224,7 +228,6 @@ int main(int argc, char* argv[]){
     std::cout << glGetString(GL_VERSION) << "\n"; 
 
     // Initialize ImGui 
-    const char* glsl_version = "#version 330";
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(window, true); 
     ImGui_ImplOpenGL3_Init(glsl_version);
